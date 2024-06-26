@@ -103,7 +103,7 @@ byte ColorSensor::getColor() {
   if (minusB <= margin_no_color) {
     B_raw = 0;
   } else {
-    B_raw = minusB - margin_no_color;
+    B_raw = minusB - margin_no_color * 1.45;
   }
 
   if ((R_raw <= 10) && (G_raw <= 10) && (B_raw <= 10)) {
