@@ -8,7 +8,6 @@ const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 class ColorSensor {
 private:
   byte r_pin, g_pin, b_pin, pht;
-  int R_raw, G_raw, B_raw;
   int reflectedOffR, reflectedOnR, reflectedOffG, reflectedOnG, reflectedOffB, reflectedOnB;
   int blackMin[3] = { 5, 10, 10 };
   int blackMax[3] = { 110, 80, 80 };
@@ -27,6 +26,7 @@ private:
   unsigned long inicial, final;
 
 public:
+  int R_raw, G_raw, B_raw;
   ColorSensor(byte r, byte g, byte b, byte p)
     : r_pin(r), g_pin(g), b_pin(b), pht(p) {
     pinMode(r_pin, OUTPUT);
@@ -35,9 +35,10 @@ public:
     pinMode(pht, INPUT);
   }
 
-  byte getColor();
+  byte getColor(float multR, float multG, float multB);
   void printValues();
-  bool darkness(int cutoffValue);
+  int darkness();
+  bool isBlack(int cutoffValue);
 
   void setBlackMin(int r, int g, int b);
   void setBlackMax(int r, int g, int b);
