@@ -61,7 +61,7 @@ void ColorSensor::setWhiteMax(int r, int g, int b) {
   whiteMax[2] = b;
 }
 
-byte ColorSensor::getColor() {
+byte ColorSensor::getColor(float multR = 1, float multG = 1, float multB = 1) {
   unsigned long fallTime = 350;
   unsigned long riseTime = 350;
   byte margin_no_color = 3;
@@ -77,7 +77,7 @@ byte ColorSensor::getColor() {
   if (minusR <= margin_no_color) {
     R_raw = 0;
   } else {
-    R_raw = minusR - margin_no_color;
+    R_raw = (minusR - margin_no_color) * multR;
   }
 
   digitalWrite(g_pin, HIGH);
@@ -90,7 +90,7 @@ byte ColorSensor::getColor() {
   if (minusG <= margin_no_color) {
     G_raw = 0;
   } else {
-    G_raw = minusG - margin_no_color;
+    G_raw = (minusG - margin_no_color) * multG;
   }
 
   digitalWrite(b_pin, HIGH);
@@ -103,10 +103,10 @@ byte ColorSensor::getColor() {
   if (minusB <= margin_no_color) {
     B_raw = 0;
   } else {
-    B_raw = minusB - margin_no_color * 1.45;
+    B_raw = ((minusB - margin_no_color) * 1.45) * multB;
   }
 
-  if ((R_raw <= 10) && (G_raw <= 10) && (B_raw <= 10)) {
+  if ((R_raw <= 0) && (G_raw <= 0) && (B_raw <= 0)) {
     color = 0;
   } else if ((R_raw >= blackMin[0]) && (G_raw >= blackMin[1]) && (B_raw >= blackMin[2]) && (R_raw <= blackMax[0]) && (G_raw <= blackMax[1]) && (B_raw <= blackMax[2])) {
     color = 1;
@@ -144,28 +144,30 @@ void ColorSensor::printValues() {
   Serial.println();
 }
 
-bool ColorSensor::darkness(int cutoffValue) {
-  unsigned long fallTime = 350;
-  unsigned long riseTime = 350;
+int ColorSensor::darkness() {
+  unsigned long fallTime = 200;
+  unsigned long riseTime = 200;
   byte margin_no_color = 3;
 
-  digitalWrite(r_pin, HIGH);
+  digitalWrite(g_pin, HIGH);
   delayMicroseconds(riseTime);
-  reflectedOnR = analogRead(pht);
-  digitalWrite(r_pin, LOW);
+  reflectedOnG = analogRead(pht);
+  digitalWrite(g_pin, LOW);
   delayMicroseconds(fallTime);
-  reflectedOffR = analogRead(pht);
-  minusR = reflectedOnR - reflectedOffR;
-  if (minusR <= margin_no_color) {
-    R_raw = 0;
+  reflectedOffG = analogRead(pht);
+  minusG = reflectedOnG - reflectedOffG;
+  if (minusG <= margin_no_color) {
+    G_raw = 0;
   } else {
-    R_raw = minusR - margin_no_color;
+    G_raw = minusG - margin_no_color;
   }
+  return G_raw;
+}
 
-  if(R_raw <= cutoffValue){
+bool ColorSensor::isBlack(int cutoffValue) {
+  if(darkness() <= cutoffValue){
     return 1;
-  } else{
+  } else {
     return 0;
   }
-
 }
