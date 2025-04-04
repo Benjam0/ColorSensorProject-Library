@@ -1,1 +1,1 @@
-This is a library for FledWaif's ColorSensorProject at https://github.com/FledWaif/ColorSensorProject
+This is a deprecated arduino library for an older version of DIYcolorsensor at https://github.com/LrFranca/DIYcolorsensor
